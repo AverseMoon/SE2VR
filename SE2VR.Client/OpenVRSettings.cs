@@ -28,6 +28,12 @@ public partial class OpenVROptions : ObservableObject, IOptionsPart
     private bool _showBoots = true;
 
     /// <summary>
+    /// When true, the VR controller models are rendered at the tracked hands.
+    /// </summary>
+    [Notify]
+    private bool _showControllers = true;
+
+    /// <summary>
     /// Rotates the scene on the yaw axis; used to allow the player to have a preferred orientation within their playspace.
     /// </summary>
     [Notify]

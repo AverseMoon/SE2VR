@@ -15,7 +15,7 @@ public static class Render12EngineComponentPatch
     static MethodBase? TargetMethod()
     {
         var type = AccessTools.TypeByName("Keen.VRage.Render12.EngineComponents.Render12EngineComponent");
-        return AccessTools.Method(type, "Draw", [typeof(bool)]);
+        return AccessTools.Method(type, "Draw");
     }
 
     [HarmonyPostfix]

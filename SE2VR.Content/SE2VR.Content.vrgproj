@@ -1,0 +1,38 @@
+{
+  "$Bundles": {
+    "System.Runtime": "1.0.0.0",
+    "VRage": "2.0.2.47"
+  },
+  "$Type": "VRage:Keen.VRage.Core.Project.VRageProjectData",
+  "$Value": {
+    "Name": "SE2VR.Content",
+    "Version": null,
+    "Type": "Mod",
+    "ProjectID": {
+      "Guid": "368f80c1-0df9-450a-ad6b-711bf4fc55c1",
+      "ModId": null,
+      "ServiceId": ""
+    },
+    "ModSetup": null,
+    "ProjectDependencies": [
+      {
+        "Guid": "56dacb76-e25e-468a-9432-21964a9a0569",
+        "ModId": null,
+        "ServiceId": ""
+      }
+    ],
+    "ProjectDirectories": [],
+    "UsedBuildStream": "",
+    "DefinitionSetNames": [
+      "World"
+    ],
+    "GameExecutable": "SpaceEngineers2.exe",
+    "GameExecutableSearchPaths": [],
+    "ReferencedAssemblies": [],
+    "ReferencedAssembliesSearchPaths": [],
+    "EditorExtensionAssemblies": [],
+    "EditorExtensionAssembliesSearchPaths": [],
+    "SkipContentMounting": false,
+    "EnableIgnoreProcessingErrorFlags": true
+  }
+}

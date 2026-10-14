@@ -1,0 +1,45 @@
+{
+  "$Bundles": {
+    "Game2": "4.0.0.2907",
+    "System.Runtime": "1.0.0.0",
+    "VRage": "4.0.0.2907"
+  },
+  "$Type": "VRage:Keen.VRage.ContentPipeline.Models.ModelAssetData",
+  "$Value": {
+    "MaterialAssignments": [
+      {
+        "MaterialName": "knuckles_right",
+        "MaterialReference": "94dc5086-845e-4e91-b225-3e885d13db04"
+      }
+    ],
+    "MaterialStateOverrides": [],
+    "GeometryAssets": [
+      {
+        "AssetReference": "{G}8cfbfc12-c46e-497f-9ccd-4fd99b989360",
+        "UsedMaterials": [
+          "knuckles_right"
+        ],
+        "Transformations": {
+          "Translation": {
+            "X": 0,
+            "Y": 0,
+            "Z": 0
+          },
+          "Rotation": {
+            "X": 0,
+            "Y": 0,
+            "Z": 0
+          },
+          "Scale": 1
+        }
+      }
+    ],
+    "SnapToGrid": false,
+    "SuggestedModelSize": null,
+    "CollisionShapesAsset": {
+      "AssetReference": null,
+      "GroupsByFracture": [],
+      "GeneratePreciseCollider": true
+    }
+  }
+}

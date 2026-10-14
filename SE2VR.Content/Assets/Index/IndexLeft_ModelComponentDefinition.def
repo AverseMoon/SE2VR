@@ -1,0 +1,18 @@
+{
+  "$Bundles": {
+    "Game2": "4.0.0.2907",
+    "System.Runtime": "1.0.0.0",
+    "VRage": "4.0.0.2907"
+  },
+  "$Type": "VRage:Keen.VRage.Game.Components.Models.ModelComponentDefinitionObjectBuilder",
+  "$Value": {
+    "Guid": "7cf5684a-9a0a-4432-90d5-4c1919f407ce",
+    "Model": "{G}70612670-8d6c-4e42-9be2-d7cac6b0ad3c",
+    "Dummies": [],
+    "SubpartColliderOffset": {
+      "X": 0,
+      "Y": 0,
+      "Z": 0
+    }
+  }
+}

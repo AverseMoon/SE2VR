@@ -1,0 +1,24 @@
+{
+  "$Bundles": {
+    "System.Runtime": "1.0.0.0",
+    "VRage": "2.3.0.2798"
+  },
+  "$Type": "VRage:Keen.VRage.ModHUB.Models.ModProject",
+  "$Value": {
+    "Id": {
+      "Id": "00000000-0000-0000-0000-000000000000",
+      "ServiceName": ""
+    },
+    "ProjectID": {
+      "Guid": "368f80c1-0df9-450a-ad6b-711bf4fc55c1",
+      "ModId": null,
+      "ServiceId": ""
+    },
+    "Version": null,
+    "BaseMetadata": null,
+    "Name": "SE2VR.Content",
+    "Summary": "",
+    "Tags": [],
+    "ProjectFile": "SE2VR.Content.vrgproj"
+  }
+}

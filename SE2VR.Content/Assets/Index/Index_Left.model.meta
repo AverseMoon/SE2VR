@@ -1,0 +1,45 @@
+{
+  "$Bundles": {
+    "Game2": "4.0.0.2907",
+    "System.Runtime": "1.0.0.0",
+    "VRage": "4.0.0.2907"
+  },
+  "$Type": "VRage:Keen.VRage.ContentPipeline.Metafiles.MetaData",
+  "$Value": {
+    "AssetID": "70612670-8d6c-4e42-9be2-d7cac6b0ad3c",
+    "InternalItems": [
+      {
+        "$Type": "VRage:Keen.VRage.ContentPipeline.Project.Structure.FileInfoMetaDataItem",
+        "FileHash": "TXgTXXJsZmM/b2HmFCFVzQ=="
+      },
+      {
+        "$Type": "VRage:Keen.VRage.ContentPipeline.Project.Features.AssetProcessing.AssetProcessingMetaDataItem",
+        "ProcessorInfo": {
+          "Version": 40,
+          "Identifier": "P_MODEL"
+        },
+        "ContentFiles": {
+          "MainOutput": {
+            "FileHash": "1OwW84o+tMBwycMxvg0kSg==",
+            "FileName": "Index_Left.vrm"
+          },
+          "AdditionalOutputs": []
+        },
+        "Problems": [],
+        "DependenciesHashes": [
+          {
+            "Guid": "c1664378-58e0-4d06-a116-a3ee1fda7b33",
+            "Hash": "eUY/e58dRxwnCYVDfZYejw=="
+          }
+        ],
+        "AssetHash": "TXgTXXJsZmM/b2HmFCFVzQ==",
+        "OverrideDetachedState": false,
+        "IgnoredErrors": "ProcessingProblemsFound"
+      },
+      {
+        "$Type": "VRage:Keen.VRage.ContentPipeline.Definitions.DefinitionFlagsMetadata",
+        "Flags": "None"
+      }
+    ]
+  }
+}

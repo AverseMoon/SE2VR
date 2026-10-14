@@ -5,17 +5,15 @@ using Keen.Game2.Client.GameSystems.CameraSystems;
 using Keen.Game2.Client.GameSystems.CameraSystems.Helpers;
 using Keen.Game2.Client.GameSystems.CameraSystems.Modes;
 using Keen.Game2.Client.GameSystems.PlayerControl;
-using Keen.Game2.Client.GameSystems.Render;
 using Keen.Game2.Client.GameSystems.UI3D;
-using Keen.Game2.Client.WorldObjects.Character;
 using Keen.Game2.Client.WorldObjects.Spectators;
 using Keen.Game2.Client.WorldObjects.Tools;
 using Keen.Game2.Simulation.WorldObjects.Characters;
 using Keen.Game2.Simulation.WorldObjects.Movement;
 using Keen.Game2.Simulation.WorldObjects.Shared;
-using Keen.VRage.Animation.Animator;
 using Keen.VRage.Animation.Client;
-using Keen.VRage.Animation.Data;
+using Keen.VRage.Animation.Client.Animator;
+using Keen.VRage.Animation.Client.Data;
 using Keen.VRage.Core;
 using Keen.VRage.Core.EngineComponents;
 using Keen.VRage.Core.Game.Components;
@@ -26,14 +24,10 @@ using Keen.VRage.Core.Render;
 using Keen.VRage.DCS.Annotations;
 using Keen.VRage.DCS.Builders;
 using Keen.VRage.DCS.Components;
-using Keen.VRage.Game.Client.Render;
 using Keen.VRage.Game.Components.Models;
-using Keen.VRage.Library.Collections;
-using Keen.VRage.Library.Definitions;
 using Keen.VRage.Library.Diagnostics;
 using Keen.VRage.Library.Mathematics;
 using Keen.VRage.Library.Reflection.DependencyInjections;
-using Keen.VRage.Library.Utils;
 using Keen.VRage.Render.Options;
 using SE2VR.Client.Patches;
 using SE2VR.Simulation;
@@ -50,9 +44,6 @@ public partial class OpenVRSessionComponent : SessionComponent, IInSceneListener
 
     [Service]
     private readonly UI3DSessionComponent _ui3D;
-    
-    [Service]
-    private readonly IEntitySpawner _spawner;
 
     [Service]
     private readonly IOptions _options;
@@ -66,10 +57,6 @@ public partial class OpenVRSessionComponent : SessionComponent, IInSceneListener
     private OpenVREngineComponent _vr;
     private OpenVROptions _settings;
 
-    private Entity? _rightController;
-    private Entity? _leftController;
-    private PresetIdTypeDefinition _hideBodyPreset;
-
     private bool _originalAutoRotation;
 
     [Init]
@@ -82,9 +69,6 @@ public partial class OpenVRSessionComponent : SessionComponent, IInSceneListener
 
         _settings = _options.GetOrCreatePart<OpenVROptions>();
 
-        DefinitionManager.Instance.TryGetDefinition(new Guid("44169cc8-0450-4100-9232-f646932c7e62"), out var def);
-        _hideBodyPreset = (PresetIdTypeDefinition)def!;
-
         //The player should rotate their hand to rotate the block preview
         _originalAutoRotation = _options.GetOrCreatePart<BlockPlacerOptions>().AutoRotation;
         Logging.Info($"Loaded into world with resolution of {_options.GetOrCreatePart<RenderDisplayOptionsPart>().Resolution}");
@@ -94,12 +78,6 @@ public partial class OpenVRSessionComponent : SessionComponent, IInSceneListener
     protected void Destroy()
     {
         _options.GetOrCreatePart<BlockPlacerOptions>().AutoRotation = _originalAutoRotation;
-    }
-
-    void IInSceneListener.OnAddedToScene()
-    {
-        _rightController = CreateModelEntity(new Guid("3e14b273-42f2-4813-921a-1d375030d034"));
-        _leftController = CreateModelEntity(new Guid("7cf5684a-9a0a-4432-90d5-4c1919f407ce"));
     }
 
     void IInSceneListener.OnBeforeRemovedFromScene()
@@ -125,8 +103,9 @@ public partial class OpenVRSessionComponent : SessionComponent, IInSceneListener
             ControlledEntity.Entity = controllable.Entity;
 
             var eob = EntityBuilder.ForScene(Entity.Scene)
+                .WithName("ToolOrigin")
                 .WithComponent((typeof(ChildTransformComponent), new ChildTransformComponentObjectBuilder()))
-                .WithComponent((typeof(HierarchyComponent), new HierarchyComponentObjectBuilder(), ["ToolOrigin"]))
+                .WithComponent((typeof(HierarchyComponent), new HierarchyComponentObjectBuilder(), [nameof(HierarchyComponent), "ToolOrigin"]))
                 .CompileObjectBuilder();
 
             //ToolOrigin
@@ -135,33 +114,12 @@ public partial class OpenVRSessionComponent : SessionComponent, IInSceneListener
         }
         else if(ControlledEntity.Entity == controllable.Entity)
         {
-            foreach (var strategy in ControlledEntity.Entity.All<CharacterRenderStrategyComponent>())
-            {
-                strategy.UnhidePreset(_hideBodyPreset, this);
-            }
-
             Assert.NotNull(InteractorEntity);
             ControlledEntity.Entity.Get<HierarchyComponent>().RemoveChild(InteractorEntity);
             InteractorEntity = null;
 
             ControlledEntity.Entity = null;
         }
-    }
-
-    private Entity? CreateModelEntity(Guid modelId)
-    {
-        if (!DefinitionManager.Instance.TryGetDefinition(modelId, out var def))
-            return null;
-
-        var model = (ModelComponentDefinition)def!;
-        var eob = EntityBuilder.ForScene(Entity.Scene)
-            .WithComponent((typeof(WorldTransformComponent), new WorldTransformComponentObjectBuilder()))
-            .WithComponent((typeof(ModelComponent), model))
-            .WithComponent(typeof(ModelRenderComponent))
-            .WithComponent(typeof(RootEntityRenderComponent))
-            .CompileObjectBuilder();
-
-        return _spawner.SpawnEntity(eob);
     }
 
     [DoNotPause]
@@ -174,22 +132,9 @@ public partial class OpenVRSessionComponent : SessionComponent, IInSceneListener
         var camera = Session.GetEntitiesOfType<CameraComponent>().Single().Get<CameraComponent>();
         var wt = ControlledEntity.Entity.Data.GetWorldTransform();
 
-        if (_vr.LeftHand is { } left)
-        {
-            WorldTransform realLeft = wt * left;
-            _leftController?.Data.SetWorldTransform(realLeft);
-        }
-
-        if (_vr.RightHand is { } right)
-        {
-            WorldTransform realRight = wt * right;
-            _rightController?.Data.SetWorldTransform(realRight);
-        }
-
-        if (ControlledEntity.Entity.TryGet<CharacterComponent>() is { } character)
+        if (ControlledEntity.Entity.TryGet<CharacterComponent>() is not null)
         {
             UpdateHands(_vr.LeftHand, _vr.RightHand);
-            HideBody(character);
         }
 
         UpdateInteraction(wt, _vr.RightHand, _vr.Head);
@@ -337,34 +282,6 @@ public partial class OpenVRSessionComponent : SessionComponent, IInSceneListener
             CharacterApproximateToolOriginProviderComponent_WorldTransform_Patch.Origin = null;
             GunToolComponent_GetProjectileTransform_Patch.Transform = null;
             GunToolComponent_GetProjectileVisualsTransform_Patch.Transform = null;
-        }
-    }
-
-    private void HideBody(CharacterComponent character)
-    {
-        MethodInfo hideMethod = typeof(CharacterRenderStrategyComponent).GetMethod("Hide", BindingFlags.NonPublic | BindingFlags.Instance)!;
-
-        foreach (var strategy in character.Entity.All<CharacterRenderStrategyComponent>())
-        {
-            if (strategy.ModelDefinition.Presets is { } presets && presets.RenderPartsChanges.TryGetValue(_hideBodyPreset, out var changes))
-            {
-                if (_settings.ShowBoots)
-                {
-                    var hiddenparts = changes.HiddenParts.ToList();
-                    hiddenparts.Remove("MiroslavSokol_BootsProps");
-                    changes.HiddenParts = new MergeableList<StringId>(hiddenparts.Count);
-                    foreach (var part in hiddenparts)
-                    {
-                        changes.HiddenParts.Add(part);
-                    }
-                }
-
-                hideMethod.Invoke(strategy,
-                [
-                    changes,
-                this
-                ]);
-            }
         }
     }
 }

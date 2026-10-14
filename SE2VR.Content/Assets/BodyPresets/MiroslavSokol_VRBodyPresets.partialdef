@@ -1,0 +1,158 @@
+{
+  "$Bundles": {
+    "Game2": "4.0.0.2907",
+    "System.Runtime": "1.0.0.0",
+    "VRage": "4.0.0.2907"
+  },
+  "$Type": "VRage:Keen.VRage.ContentPipeline.Definitions.PartialDefinitionDiff",
+  "$Value": {
+    "BaseDefinition": "34349ab7-8fed-4597-bb5d-3da7e47a3577",
+    "PartialDefinitionKind": "Override",
+    "Manipulator": {
+      "RenderPartsChanges": {
+        "$DeltaEncoded": true,
+        "RemovedKeys": [],
+        "ModifiedKeys": [
+          {
+            "$Key": "92d3eaaf-4704-4915-bd02-13257b24ced4",
+            "$Value": {
+              "HiddenParts": [
+                {
+                  "Key": "ffd1956c-8673-870f-a0ca-5902d1f0f03a",
+                  "Value": "MagBootsEnabled"
+                },
+                {
+                  "Key": "4c137844-5086-1d5d-46ec-4243efd749c8",
+                  "Value": "MiroslavSokol_Backpack"
+                },
+                {
+                  "Key": "038b56e1-855c-d7e2-d3fe-b97a71d11df7",
+                  "Value": "MiroslavSokol_BackpackLOD2"
+                },
+                {
+                  "Key": "a0f23d54-bd7b-ab2f-fda0-3f423a4f661c",
+                  "Value": "MiroslavSokol_BackpackLOD3"
+                },
+                {
+                  "Key": "05d49992-45ee-2e95-afc6-26242cab3c9d",
+                  "Value": "MiroslavSokol_BackPlate"
+                },
+                {
+                  "Key": "881d646b-5777-5e91-7d05-eac69d823c8d",
+                  "Value": "MiroslavSokol_BodyLOD2"
+                },
+                {
+                  "Key": "efb7ab19-d101-f59f-cf2e-771873c9d966",
+                  "Value": "MiroslavSokol_BodyLOD3"
+                },
+                {
+                  "Key": "7522e197-917a-b1c3-8e05-e42d0dea80c1",
+                  "Value": "MiroslavSokol_BootsProps"
+                },
+                {
+                  "Key": "52192565-af50-6c97-2fa6-8c5204895078",
+                  "Value": "MiroslavSokol_BottomSuit"
+                },
+                {
+                  "Key": "2d9deabb-8b69-0b97-3cc8-ecad927a11c3",
+                  "Value": "MiroslavSokol_Eyes"
+                },
+                {
+                  "Key": "d8c6da92-ec68-2478-45b0-70b466f830d3",
+                  "Value": "MiroslavSokol_Hair"
+                },
+                {
+                  "Key": "19f8860a-f189-d698-7be2-320627e0786e",
+                  "Value": "MiroslavSokol_Head"
+                },
+                {
+                  "Key": "2bcd3a30-eea0-3cf0-2a2f-94aadae32be9",
+                  "Value": "MiroslavSokol_Helmet"
+                },
+                {
+                  "Key": "c0245c03-b456-a255-f2c3-bcd000f37f66",
+                  "Value": "MiroslavSokol_HelmetVisor"
+                },
+                {
+                  "Key": "73552f5d-c26e-7074-de9a-c97fa4677e73",
+                  "Value": "MiroslavSokol_LastLod"
+                },
+                {
+                  "Key": "db799848-4710-1540-ca82-9067cce4154e",
+                  "Value": "MiroslavSokol_UpSuit"
+                }
+              ],
+              "OverrideMaterials": []
+            }
+          },
+          {
+            "$Key": "aa73f9ee-1ae0-4c4a-992c-20be087f95cd",
+            "$Value": {
+              "HiddenParts": [
+                {
+                  "Key": "358acec7-0abb-d4e0-4bae-51ed848dda0c",
+                  "Value": "MiroslavSokol_Backpack"
+                },
+                {
+                  "Key": "5630196d-9e9d-e16f-4c3f-528c0387fbef",
+                  "Value": "MiroslavSokol_BackpackLOD2"
+                },
+                {
+                  "Key": "f307b09c-123b-df9e-fb93-58157e270609",
+                  "Value": "MiroslavSokol_BackpackLOD3"
+                },
+                {
+                  "Key": "577a4bb4-e700-e0b0-215c-285f21844464",
+                  "Value": "MiroslavSokol_BackPlate"
+                },
+                {
+                  "Key": "76579772-4e3d-34ef-d376-9c518886d551",
+                  "Value": "MiroslavSokol_BodyLOD2"
+                },
+                {
+                  "Key": "4ff4af73-cf8d-bc79-b4bb-26d5cac66c98",
+                  "Value": "MiroslavSokol_BodyLOD3"
+                },
+                {
+                  "Key": "52b6ec9e-32d2-cb02-66bb-3688386e8133",
+                  "Value": "MiroslavSokol_BottomSuit"
+                },
+                {
+                  "Key": "9a8c3429-a510-a7a0-9a9d-a95e8edb4258",
+                  "Value": "MiroslavSokol_Eyes"
+                },
+                {
+                  "Key": "448affd4-e5df-5921-90b1-7e53a3341fdc",
+                  "Value": "MiroslavSokol_Hair"
+                },
+                {
+                  "Key": "2fe02853-b608-a455-fd8f-0a2696c2f6fd",
+                  "Value": "MiroslavSokol_Head"
+                },
+                {
+                  "Key": "3a86b0e3-a390-223c-c3af-ee1e7c707e7f",
+                  "Value": "MiroslavSokol_Helmet"
+                },
+                {
+                  "Key": "b0084487-5896-c5f7-bd62-bec6039a7f21",
+                  "Value": "MiroslavSokol_HelmetVisor"
+                },
+                {
+                  "Key": "06baac01-52ab-22b4-4095-95900135cd41",
+                  "Value": "MiroslavSokol_LastLod"
+                },
+                {
+                  "Key": "bc320f06-7368-38e8-cb83-8ed324b1628e",
+                  "Value": "MiroslavSokol_UpSuit"
+                }
+              ],
+              "OverrideMaterials": []
+            }
+          }
+        ]
+      }
+    },
+    "DefinitionType": "Game2:Keen.Game2.Client.GameSystems.Render.ModelPartPresetsDefinition",
+    "PriorityOverride": false
+  }
+}

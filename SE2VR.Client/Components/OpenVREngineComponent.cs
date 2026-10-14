@@ -118,9 +118,13 @@ public partial class OpenVREngineComponent : EngineComponent, ISessionConfigurat
             return;
 
         sessionBuilder.SessionComponents.WithComponent<OpenVRSessionComponent>();
+        sessionBuilder.SessionComponents.WithComponent<VRBodyHidingSessionComponent>();
         sessionBuilder.SessionComponents.WithComponent<PhysicsHandClientSessionComponent>();
         sessionBuilder.SessionComponents.WithComponent<HapticsSessionComponent>();
         sessionBuilder.SessionComponents.WithComponent<VRPauseSessionComponent>();
+
+        if (VROptions.ShowControllers)
+            sessionBuilder.SessionComponents.WithComponent<VRControllersSessionComponent>();
 
         if (VROptions.CrouchHeight > 0)
             sessionBuilder.SessionComponents.WithComponent<VRCrouchingSessionComponent>();

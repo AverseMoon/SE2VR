@@ -1,0 +1,108 @@
+{
+  "$Bundles": {
+    "Game2": "4.0.0.2907",
+    "System.Runtime": "1.0.0.0",
+    "VRage": "4.0.0.2907"
+  },
+  "$Type": "Game2:Keen.Game2.Client.GameSystems.Render.ModelPartPresetsDefinitionObjectBuilder",
+  "$Value": {
+    "RenderPartsChanges": {
+      "$DeltaEncoded": true,
+      "RemovedKeys": [],
+      "ModifiedKeys": [
+        {
+          "$Key": "92d3eaaf-4704-4915-bd02-13257b24ced4",
+          "$Value": {
+            "HiddenParts": [
+              {
+                "Key": "b778d5eb-d7e1-3165-7981-a0a96bdc7abc",
+                "Value": "PioneerCharacter_Backpack"
+              },
+              {
+                "Key": "3e24a7f1-50b5-9136-6157-0cafb4ceaa46",
+                "Value": "PioneerCharacter_BackpackLOD2"
+              },
+              {
+                "Key": "7a584fca-1def-e21e-aae0-a4d497c7af39",
+                "Value": "PioneerCharacter_BackpackLOD3"
+              },
+              {
+                "Key": "b8b8b525-b2fe-8047-a975-60f203feb2c0",
+                "Value": "PioneerCharacter_BodyLOD2"
+              },
+              {
+                "Key": "7c3def8c-d314-0416-c2fa-f0cca722ae29",
+                "Value": "PioneerCharacter_BodyLOD3"
+              },
+              {
+                "Key": "7d95f15a-80d1-8b57-5a31-8671cbbd3f8b",
+                "Value": "PioneerCharacter_BootsProps"
+              },
+              {
+                "Key": "ce9b5b4b-5fd9-8977-0ab0-ef1129c7dd62",
+                "Value": "PioneerCharacter_BottomSuit"
+              },
+              {
+                "Key": "9fb8c93f-4ca3-6edb-2f01-c560e05ec73c",
+                "Value": "PioneerCharacter_Helmet"
+              },
+              {
+                "Key": "968e9841-e149-4592-31d4-c91aca37ea52",
+                "Value": "PioneerCharacter_LastLod"
+              },
+              {
+                "Key": "d3594aa0-4aaa-14b9-fe8f-2989172c496d",
+                "Value": "PioneerCharacter_UpSuit"
+              }
+            ],
+            "OverrideMaterials": []
+          }
+        },
+        {
+          "$Key": "aa73f9ee-1ae0-4c4a-992c-20be087f95cd",
+          "$Value": {
+            "HiddenParts": [
+              {
+                "Key": "05462f48-6b0e-1469-8259-c666eeb591b3",
+                "Value": "PioneerCharacter_Backpack"
+              },
+              {
+                "Key": "c3f8e20a-9c79-3429-f8cd-e85936118767",
+                "Value": "PioneerCharacter_BackpackLOD2"
+              },
+              {
+                "Key": "84becb32-67ba-882a-bec2-794874fac2ee",
+                "Value": "PioneerCharacter_BackpackLOD3"
+              },
+              {
+                "Key": "a3be6b46-3eb9-7d1c-e8f8-77e28b10feb2",
+                "Value": "PioneerCharacter_BodyLOD2"
+              },
+              {
+                "Key": "c53f2e6f-3b6f-35b3-6a70-0eb13c3966a6",
+                "Value": "PioneerCharacter_BodyLOD3"
+              },
+              {
+                "Key": "2a03b8ca-ac6f-3c86-0a04-b34ae7290714",
+                "Value": "PioneerCharacter_BottomSuit"
+              },
+              {
+                "Key": "517b68b0-42a3-c44e-747e-d926c13d7da7",
+                "Value": "PioneerCharacter_Helmet"
+              },
+              {
+                "Key": "97bed7c1-093b-13da-6f61-8c67da4f63ff",
+                "Value": "PioneerCharacter_LastLod"
+              },
+              {
+                "Key": "6b91b186-a815-aa70-3ee2-caae2b56f3bc",
+                "Value": "PioneerCharacter_UpSuit"
+              }
+            ],
+            "OverrideMaterials": []
+          }
+        }
+      ]
+    }
+  }
+}

@@ -58,10 +58,6 @@
       <HintPath>..\GameLibs\Vortice.DXGI.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="VRage.Animation">
-      <HintPath>..\GameLibs\VRage.Animation.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="VRage.Animation.Client">
       <HintPath>..\GameLibs\VRage.Animation.Client.dll</HintPath>
       <Private>False</Private>
@@ -116,6 +112,11 @@
 		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	</Content>
   </ItemGroup>
+
+	<ItemGroup>
+		<None Include="..\SE2VR.Content\SE2VR.Content.vrgproj" Link="SE2VR.Content\SE2VR.Content.vrgproj" CopyToOutputDirectory="PreserveNewest" />
+		<None Include="..\SE2VR.Content\Content\**" Link="SE2VR.Content\Content\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<Analyzer Include="..\GameLibs\VRage.CodeGuard.Analyzers.dll" />

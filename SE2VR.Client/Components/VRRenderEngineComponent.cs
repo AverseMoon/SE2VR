@@ -1,7 +1,7 @@
 ﻿using Avalonia.Controls;
 using HarmonyLib;
 using Keen.Game2.Client.GameSystems.CameraSystems;
-using Keen.VRage.Animation.Resources;
+using Keen.VRage.Animation.Client.Resources;
 using Keen.VRage.Core;
 using Keen.VRage.Core.EngineComponents;
 using Keen.VRage.Core.Game.Components;
@@ -54,9 +54,6 @@ public partial class VRRenderEngineComponent : EngineComponent, IInSceneListener
 
     private Vector2I _originalResolution;
 
-    private WorldTransform? _previousBody;
-    private Vector3D _bodyDelta;
-
     [Init]
     protected new void Init()
     {
@@ -69,7 +66,7 @@ public partial class VRRenderEngineComponent : EngineComponent, IInSceneListener
 
         OpenVR.Compositor.SetExplicitTimingMode(EVRCompositorTimingMode.Explicit_ApplicationPerformsPostPresentHandoff);
 
-        RenderCommandBufferPatch.PreCommit += OverrideCamera; //60hz
+        CommitFramePatch.PreCommit += OverrideCamera; //60hz
         Render12EngineComponentPatch.PostDraw += PostDraw; //up to 200hz
         
         uint width = 0, height = 0;
@@ -172,20 +169,6 @@ public partial class VRRenderEngineComponent : EngineComponent, IInSceneListener
         {
             var body = Body.Data.GetWorldTransform();
             body.Position += Vector3D.Transform(_vrOptions.WorldOffset, body.Orientation);
-
-            //hack to make right eye sync better
-            if (DOUBLE_RENDER)
-            {
-                if (_currentPass == EVREye.Eye_Left)
-                {
-                    _bodyDelta = _previousBody.HasValue ? body.Position - _previousBody.Value.Position : Vector3D.Zero;
-                    _previousBody = body;
-                }
-                else if (_currentPass == EVREye.Eye_Right)
-                {
-                    body.Position += _bodyDelta;
-                }
-            }
 
             var eyeToHead = VRUtils.ToTransform(OpenVREngineComponent.Instance.System.GetEyeToHeadTransform(_currentPass));
 

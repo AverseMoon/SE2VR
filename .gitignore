@@ -365,3 +365,9 @@ FodyWeavers.xsd
 # ignore SE2 gamelibs junction file
 GameLibs/
 /SE2VR/Properties/launchSettings.json
+
+# SE2VR.Content game content project
+!SE2VR.Content/**/*.meta
+SE2VR.Content/.hashescache*
+SE2VR.Content/.referencescache*
+SE2VR.Content/.startupblobscache*

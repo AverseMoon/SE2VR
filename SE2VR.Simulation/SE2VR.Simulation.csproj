@@ -69,10 +69,6 @@
 			<HintPath>..\GameLibs\Vortice.DXGI.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
-		<Reference Include="VRage.Animation">
-			<HintPath>..\GameLibs\VRage.Animation.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
 		<Reference Include="VRage.Animation.Client">
 			<HintPath>..\GameLibs\VRage.Animation.Client.dll</HintPath>
 			<Private>False</Private>
