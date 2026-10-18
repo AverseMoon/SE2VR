@@ -17,6 +17,7 @@ using Keen.VRage.Library.Reflection.DependencyInjections;
 using SE2VR.Client.Components;
 using Valve.VR;
 using static SE2VR.Client.Components.OpenVREngineComponent;
+using static SE2VR.Client.Configurations.VRArmsConfiguration;
 
 namespace SE2VR.Client.Input;
 
@@ -58,6 +59,19 @@ public partial class OpenVRInputEngineComponent : Component
     private VRActiveActionSet_t[] _pushedActionSets = null!;
     private OpenVROptions _vrOptions = null!;
 
+    private ulong _leftSkeletonAction;
+    private ulong _rightSkeletonAction;
+
+    /// <summary>
+    /// 0-1 curl of each finger. 0 is extended, 1 is fully closed
+    /// </summary>
+    public readonly Dictionary<Finger, float> LeftFingers = new();
+
+    /// <summary>
+    /// <inheritdoc cref="LeftFingers"/>
+    /// </summary>
+    public readonly Dictionary<Finger, float> RightFingers = new();
+
     [Init]
     protected void Init()
     {
@@ -72,6 +86,12 @@ public partial class OpenVRInputEngineComponent : Component
         string path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!, ACTIONS_FILE);
         if (OpenVR.Input.SetActionManifestPath(path) != EVRInputError.None)
             throw new Exception($"Failed to set VR action manifest at path {path}");
+
+        if (OpenVR.Input.GetActionHandle("/actions/default/in/SkeletonLeftHand", ref _leftSkeletonAction) != EVRInputError.None)
+            throw new Exception("Couldn't bind left hand skeleton");
+
+        if (OpenVR.Input.GetActionHandle("/actions/default/in/SkeletonRightHand", ref _rightSkeletonAction) != EVRInputError.None)
+            throw new Exception("Couldn't bind right hand skeleton");
 
         AddMapping("/actions/default", "/actions/default/in/InteractPrimary", new DigitalInput(),
         [
@@ -269,6 +289,10 @@ public partial class OpenVRInputEngineComponent : Component
             return;
 
         OpenVR.Input.UpdateActionState(_pushedActionSets, (uint)Marshal.SizeOf<VRActiveActionSet_t>());
+
+        UpdateFingers(_leftSkeletonAction, LeftFingers);
+        UpdateFingers(_rightSkeletonAction, RightFingers);
+
         foreach (var set in ActionSets.Values)
         {
             if (set.Context == null)
@@ -318,7 +342,6 @@ public partial class OpenVRInputEngineComponent : Component
         }
     }
 
-
     [OnActionPressedSignal]
     private void OnActionPressedImpl(in VRInputHandle inputHandle, object? value, bool changed, bool active)
     {
@@ -349,6 +372,22 @@ public partial class OpenVRInputEngineComponent : Component
                 _input.Release(definition);
             }
         }
+    }
+
+    private static void UpdateFingers(ulong skeletonAction, Dictionary<Finger, float> curls)
+    {
+        VRSkeletalSummaryData_t summary = default;
+        if (OpenVR.Input.GetSkeletalSummaryData(skeletonAction, EVRSummaryType.FromAnimation, ref summary) != EVRInputError.None)
+        {
+            curls.Clear();
+            return;
+        }
+
+        curls[Finger.Thumb] = summary.flFingerCurl0;
+        curls[Finger.Index] = summary.flFingerCurl1;
+        curls[Finger.Middle] = summary.flFingerCurl2;
+        curls[Finger.Ring] = summary.flFingerCurl3;
+        curls[Finger.Pinky] = summary.flFingerCurl4;
     }
 }
 

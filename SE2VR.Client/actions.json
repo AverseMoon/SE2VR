@@ -6,6 +6,16 @@
       "requirement": "optional"
     },
     {
+      "name": "/actions/default/in/SkeletonLeftHand",
+      "type": "skeleton",
+      "skeleton": "/skeleton/hand/left"
+    },
+    {
+      "name": "/actions/default/in/SkeletonRightHand",
+      "type": "skeleton",
+      "skeleton": "/skeleton/hand/right"
+    },
+    {
       "name": "/actions/default/in/InteractPrimary",
       "type": "boolean"
     },
@@ -129,6 +139,8 @@
   "localization": [
     {
       "language_tag": "en_US",
+      "/actions/default/in/SkeletonLeftHand": "Left Hand Skeleton",
+      "/actions/default/in/SkeletonRightHand": "Right Hand Skeleton",
       "/actions/default/in/InteractPrimary": "Interact Primary (Tool Primary, Place Block, UI, etc)",
       "/actions/default/in/InteractSecondary": "Interact Secondary (Tool Secondary)",
       "/actions/default/in/Move": "Move",

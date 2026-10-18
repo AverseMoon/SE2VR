@@ -12,8 +12,6 @@ using Keen.Game2.Simulation.WorldObjects.Characters;
 using Keen.Game2.Simulation.WorldObjects.Movement;
 using Keen.Game2.Simulation.WorldObjects.Shared;
 using Keen.VRage.Animation.Client;
-using Keen.VRage.Animation.Client.Animator;
-using Keen.VRage.Animation.Client.Data;
 using Keen.VRage.Core;
 using Keen.VRage.Core.EngineComponents;
 using Keen.VRage.Core.Game.Components;
@@ -132,11 +130,6 @@ public partial class OpenVRSessionComponent : SessionComponent, IInSceneListener
         var camera = Session.GetEntitiesOfType<CameraComponent>().Single().Get<CameraComponent>();
         var wt = ControlledEntity.Entity.Data.GetWorldTransform();
 
-        if (ControlledEntity.Entity.TryGet<CharacterComponent>() is not null)
-        {
-            UpdateHands(_vr.LeftHand, _vr.RightHand);
-        }
-
         UpdateInteraction(wt, _vr.RightHand, _vr.Head);
 
         VRageCore.Instance.Engine.Get<VRRenderEngineComponent>().Camera = camera;
@@ -158,62 +151,6 @@ public partial class OpenVRSessionComponent : SessionComponent, IInSceneListener
             var activeCameraField = typeof(CameraSystemComponent).GetField("_activeCamera", BindingFlags.NonPublic | BindingFlags.Instance)!;
             var activeCamera = activeCameraField.GetValue(system) as CameraControllerHelper;
             activeCamera?.ToggleNextCameraMode();
-        }
-    }
-
-    private void UpdateHands(RelativeTransform? leftHand, RelativeTransform? rightHand)
-    {
-        foreach (var rig in ControlledEntity.Entity!.All<IRiggedAnimator>())
-        {
-            //TODO USE STATIC WRIST/ELBOW POSE
-            var skeleton = rig.Skeleton;
-            var pose = rig.GetPose();
-
-            if (leftHand is { } left)
-            {
-                left.Orientation *= Quaternion.CreateFromAxisAngle(Vector3.Right, MathHelper.ToRadians(-48.81f));
-                left.Position += left.Orientation.GetUp() * -0.075f;
-                left.Position += left.Orientation.GetForward() * -0.15f;
-
-                left.Orientation *= Quaternion.CreateFromYawPitchRoll(-MathF.PI / 2, -MathF.PI / 2, 0);
-                left.Orientation *= Quaternion.CreateFromAxisAngle(Vector3.Forward, MathHelper.ToRadians(-23f));
-                left.Orientation *= Quaternion.CreateFromAxisAngle(Vector3.Right, MathHelper.ToRadians(5f));
-
-                OverrideHandPose(ref pose, "Wrist_L", "ElbowPart1_L", left);
-            }
-
-            if (rightHand is { } right)
-            {
-                right.Orientation *= Quaternion.CreateFromAxisAngle(Vector3.Right, MathHelper.ToRadians(-48.81f));
-                right.Position += right.Orientation.GetUp() * -0.075f;
-                right.Position += right.Orientation.GetForward() * -0.15f;
-
-                right.Orientation *= Quaternion.CreateFromYawPitchRoll(MathF.PI / 2, MathF.PI / 2, 0);
-                right.Orientation *= Quaternion.CreateFromAxisAngle(Vector3.Forward, MathHelper.ToRadians(-23f));
-                right.Orientation *= Quaternion.CreateFromAxisAngle(Vector3.Right, MathHelper.ToRadians(5f));
-
-                OverrideHandPose(ref pose, "Wrist_R", "ElbowPart1_R", right);
-            }
-
-            if (_vr.Head.HasValue) //Flashlight
-                pose.SetAbsolute(skeleton.GetBone("HeadBoneParent").Index, _vr.Head.Value);
-
-            void OverrideHandPose(ref PoseContainer.PoseReference pose, string wristBone, string elbowPart1Bone, RelativeTransform transform)
-            {
-                var wrist = skeleton.GetBone(wristBone);
-                var elbowPart1 = skeleton.GetBone(elbowPart1Bone);
-                var elbow = skeleton.Bones[wrist.Parent];
-
-                RelativeTransform absoluteWrist = pose.GetAbsolute(wrist.Index);
-                RelativeTransform absoluteElbowPart1 = pose.GetAbsolute(elbowPart1.Index);
-                RelativeTransform absoluteElbow = pose.GetAbsolute(elbow.Index);
-
-                var relativeElbowToWrist = (RelativeTransform)WorldTransform.GetRelativeTransform(absoluteElbow, absoluteWrist);
-                var relativeElbowPart1ToWrist = (RelativeTransform)WorldTransform.GetRelativeTransform(absoluteElbowPart1, absoluteWrist);
-                pose.SetAbsolute(elbow.Index, transform * relativeElbowToWrist);
-                pose.SetAbsolute(elbowPart1.Index, transform * relativeElbowPart1ToWrist);
-                pose.SetRelative(wrist.Index, (RelativeTransform)WorldTransform.GetRelativeTransform(transform, transform * relativeElbowToWrist));
-            }
         }
     }
 

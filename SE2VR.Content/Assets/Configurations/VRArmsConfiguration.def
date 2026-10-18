@@ -1,0 +1,246 @@
+{
+  "$Bundles": {
+    "Game2": "4.0.0.2907",
+    "SE2VR": "1.1.1.1",
+    "SE2VR.Client": "1.1.1.1",
+    "SE2VR.Simulation": "1.1.1.1",
+    "System.Runtime": "1.0.0.0",
+    "VRage": "4.0.0.2907"
+  },
+  "$Type": "SE2VR.Client:SE2VR.Client.Configurations.VRArmsConfigurationObjectBuilder",
+  "$Value": {
+    "Guid": "91137d50-0acc-4da9-b4f2-0e9394eb9266",
+    "LeftHand": {
+      "WristOffset": {
+        "Transform": {
+          "Position": {
+            "X": -0.0439,
+            "Y": 0.0487,
+            "Z": 0.1714
+          },
+          "Orientation": {
+            "X": 0.58435,
+            "Y": 0.66823,
+            "Z": 0.15171,
+            "W": -0.43473
+          }
+        },
+        "EulerHint": {
+          "X": -45.3019,
+          "Y": -144.9745,
+          "Z": 67.3351
+        }
+      },
+      "WristBone": "Wrist_L",
+      "ElbowPart1Bone": "ElbowPart1_L",
+      "Fingers": [
+        {
+          "Finger": "Thumb",
+          "Joints": [
+            {
+              "Bone": "ThumbFinger1_L",
+              "CurlAngle": 0.4363323
+            },
+            {
+              "Bone": "ThumbFinger2_L",
+              "CurlAngle": 0.6108652
+            },
+            {
+              "Bone": "ThumbFinger3_L",
+              "CurlAngle": 0.7853982
+            }
+          ],
+          "TipBone": "ThumbFinger4_L"
+        },
+        {
+          "Finger": "Index",
+          "Joints": [
+            {
+              "Bone": "IndexFinger1_L",
+              "CurlAngle": 0.610865
+            },
+            {
+              "Bone": "IndexFinger2_L",
+              "CurlAngle": 0.785398
+            },
+            {
+              "Bone": "IndexFinger3_L",
+              "CurlAngle": 0.523599
+            }
+          ],
+          "TipBone": "IndexFinger4_L"
+        },
+        {
+          "Finger": "Middle",
+          "Joints": [
+            {
+              "Bone": "MiddleFinger1_L",
+              "CurlAngle": 1.22173
+            },
+            {
+              "Bone": "MiddleFinger2_L",
+              "CurlAngle": 1.570796
+            },
+            {
+              "Bone": "MiddleFinger3_L",
+              "CurlAngle": 1.047198
+            }
+          ],
+          "TipBone": "MiddleFinger4_L"
+        },
+        {
+          "Finger": "Ring",
+          "Joints": [
+            {
+              "Bone": "RingFinger1_L",
+              "CurlAngle": 1.22173
+            },
+            {
+              "Bone": "RingFinger2_L",
+              "CurlAngle": 1.570796
+            },
+            {
+              "Bone": "RingFinger3_L",
+              "CurlAngle": 1.047198
+            }
+          ],
+          "TipBone": "RingFinger4_L"
+        },
+        {
+          "Finger": "Pinky",
+          "Joints": [
+            {
+              "Bone": "PinkyFinger1_L",
+              "CurlAngle": 1.22173
+            },
+            {
+              "Bone": "PinkyFinger2_L",
+              "CurlAngle": 1.570796
+            },
+            {
+              "Bone": "PinkyFinger3_L",
+              "CurlAngle": 1.047198
+            }
+          ],
+          "TipBone": "PinkyFinger4_L"
+        }
+      ]
+    },
+    "RightHand": {
+      "WristOffset": {
+        "Transform": {
+          "Position": {
+            "X": 0.0439,
+            "Y": 0.0487,
+            "Z": 0.1714
+          },
+          "Orientation": {
+            "X": 0.43473,
+            "Y": 0.15171,
+            "Z": -0.66823,
+            "W": 0.58435
+          }
+        },
+        "EulerHint": {
+          "X": 45.3019,
+          "Y": -35.0257,
+          "Z": -112.6652
+        }
+      },
+      "WristBone": "Wrist_R",
+      "ElbowPart1Bone": "ElbowPart1_R",
+      "Fingers": [
+        {
+          "Finger": "Thumb",
+          "Joints": [
+            {
+              "Bone": "ThumbFinger1_R",
+              "CurlAngle": 0.4363323
+            },
+            {
+              "Bone": "ThumbFinger2_R",
+              "CurlAngle": 0.6108652
+            },
+            {
+              "Bone": "ThumbFinger3_R",
+              "CurlAngle": 0.7853982
+            }
+          ],
+          "TipBone": "ThumbFinger4_R"
+        },
+        {
+          "Finger": "Index",
+          "Joints": [
+            {
+              "Bone": "IndexFinger1_R",
+              "CurlAngle": 0.610865
+            },
+            {
+              "Bone": "IndexFinger2_R",
+              "CurlAngle": 0.785398
+            },
+            {
+              "Bone": "IndexFinger3_R",
+              "CurlAngle": 0.523599
+            }
+          ],
+          "TipBone": "IndexFinger4_R"
+        },
+        {
+          "Finger": "Middle",
+          "Joints": [
+            {
+              "Bone": "MiddleFinger1_R",
+              "CurlAngle": 1.22173
+            },
+            {
+              "Bone": "MiddleFinger2_R",
+              "CurlAngle": 1.570796
+            },
+            {
+              "Bone": "MiddleFinger3_R",
+              "CurlAngle": 1.047198
+            }
+          ],
+          "TipBone": "MiddleFinger4_R"
+        },
+        {
+          "Finger": "Ring",
+          "Joints": [
+            {
+              "Bone": "RingFinger1_R",
+              "CurlAngle": 1.22173
+            },
+            {
+              "Bone": "RingFinger2_R",
+              "CurlAngle": 1.570796
+            },
+            {
+              "Bone": "RingFinger3_R",
+              "CurlAngle": 1.047198
+            }
+          ],
+          "TipBone": "RingFinger4_R"
+        },
+        {
+          "Finger": "Pinky",
+          "Joints": [
+            {
+              "Bone": "PinkyFinger1_R",
+              "CurlAngle": 1.22173
+            },
+            {
+              "Bone": "PinkyFinger2_R",
+              "CurlAngle": 1.570796
+            },
+            {
+              "Bone": "PinkyFinger3_R",
+              "CurlAngle": 1.047198
+            }
+          ],
+          "TipBone": "PinkyFinger4_R"
+        }
+      ]
+    }
+  }
+}

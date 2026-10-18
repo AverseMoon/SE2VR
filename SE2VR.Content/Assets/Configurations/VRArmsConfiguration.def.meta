@@ -1,0 +1,39 @@
+{
+  "$Bundles": {
+    "Game2": "4.0.0.2907",
+    "SE2VR": "1.1.1.1",
+    "SE2VR.Client": "1.1.1.1",
+    "SE2VR.Simulation": "1.1.1.1",
+    "System.Runtime": "1.0.0.0",
+    "VRage": "4.0.0.2907"
+  },
+  "$Type": "VRage:Keen.VRage.ContentPipeline.Metafiles.MetaData",
+  "$Value": {
+    "AssetID": "91137d50-0acc-4da9-b4f2-0e9394eb9266",
+    "InternalItems": [
+      {
+        "$Type": "VRage:Keen.VRage.ContentPipeline.Project.Structure.FileInfoMetaDataItem",
+        "FileHash": "qXwtud6OwhL6mDiVmBeDIw=="
+      },
+      {
+        "$Type": "VRage:Keen.VRage.ContentPipeline.Project.Features.AssetProcessing.AssetProcessingMetaDataItem",
+        "ProcessorInfo": {
+          "Version": 2,
+          "Identifier": "P_DEF"
+        },
+        "ContentFiles": {
+          "MainOutput": {
+            "FileHash": "6RrTGscCTijAbGrjMW/1pw==",
+            "FileName": "VRArmsConfiguration.def"
+          },
+          "AdditionalOutputs": []
+        },
+        "Problems": [],
+        "DependenciesHashes": [],
+        "AssetHash": "qXwtud6OwhL6mDiVmBeDIw==",
+        "OverrideDetachedState": false,
+        "IgnoredErrors": "None"
+      }
+    ]
+  }
+}

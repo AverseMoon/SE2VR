@@ -42,10 +42,6 @@
       <HintPath>..\GameLibs\SharpGen.Runtime.COM.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="SpaceEngineers2">
-      <HintPath>..\GameLibs\SpaceEngineers2.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Vortice.Direct3D12">
       <HintPath>..\GameLibs\Vortice.Direct3D12.dll</HintPath>
       <Private>False</Private>

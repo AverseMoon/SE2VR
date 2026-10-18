@@ -171,9 +171,7 @@ public partial class VRRenderEngineComponent : EngineComponent, IInSceneListener
             body.Position += Vector3D.Transform(_vrOptions.WorldOffset, body.Orientation);
 
             var eyeToHead = VRUtils.ToTransform(OpenVREngineComponent.Instance.System.GetEyeToHeadTransform(_currentPass));
-
-            var eye = HMD * eyeToHead;
-            eye.Position *= _vrOptions.GetScale();
+            var eye = HMD * _vrOptions.Rescale(eyeToHead);
 
             var wt = body * eye;
 
@@ -224,7 +222,7 @@ public partial class VRRenderEngineComponent : EngineComponent, IInSceneListener
             return;
 
         IDXGISwapChain3 swapchain = MyCoreSystems.SwapChain.GetD3DSwapChain();
-        ID3D12Resource resource = swapchain.GetBuffer<ID3D12Resource>(swapchain.CurrentBackBufferIndex);
+        using ID3D12Resource resource = swapchain.GetBuffer<ID3D12Resource>(swapchain.CurrentBackBufferIndex);
         ID3D12CommandQueue queue = MyCoreSystems.DeviceContext.GetPresentQueue().GetQueue();
         
         var data = new D3D12TextureData_t

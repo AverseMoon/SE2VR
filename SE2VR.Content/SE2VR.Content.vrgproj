@@ -28,8 +28,13 @@
     ],
     "GameExecutable": "SpaceEngineers2.exe",
     "GameExecutableSearchPaths": [],
-    "ReferencedAssemblies": [],
-    "ReferencedAssembliesSearchPaths": [],
+    "ReferencedAssemblies": [
+      "SE2VR.dll"
+    ],
+    "ReferencedAssembliesSearchPaths": [
+      "..\\SE2VR\\bin\\x64\\Release\\net9.0",
+      ".."
+    ],
     "EditorExtensionAssemblies": [],
     "EditorExtensionAssembliesSearchPaths": [],
     "SkipContentMounting": false,
