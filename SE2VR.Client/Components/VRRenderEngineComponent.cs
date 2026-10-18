@@ -1,16 +1,12 @@
-﻿using Avalonia.Controls;
-using HarmonyLib;
+﻿using HarmonyLib;
 using Keen.Game2.Client.GameSystems.CameraSystems;
-using Keen.VRage.Animation.Client.Resources;
 using Keen.VRage.Core;
 using Keen.VRage.Core.EngineComponents;
 using Keen.VRage.Core.Game.Components;
 using Keen.VRage.Core.Game.Data;
 using Keen.VRage.Core.Game.Systems;
-using Keen.VRage.Core.Render;
 using Keen.VRage.DCS.Annotations;
 using Keen.VRage.DCS.Components;
-using Keen.VRage.DCS.Utils;
 using Keen.VRage.Library.Definitions;
 using Keen.VRage.Library.Mathematics;
 using Keen.VRage.Library.Reflection.DependencyInjections;

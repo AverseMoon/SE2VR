@@ -1,0 +1,96 @@
+{
+  "$Bundles": {
+    "Game2": "4.0.0.2907",
+    "System.Runtime": "1.0.0.0",
+    "VRage": "4.0.0.2907"
+  },
+  "$Type": "VRage:Keen.VRage.ContentPipeline.Definitions.PartialDefinitionDiff",
+  "$Value": {
+    "BaseDefinition": "645ac791-f66f-4917-904d-937d122d2bba",
+    "PartialDefinitionKind": "Override",
+    "Manipulator": {
+      "Dummies": {
+        "$DeltaEncoded": true,
+        "Keys": [
+          "64d21633-4956-4715-b787-1a0aaa01b2ac",
+          "9e072fbc-da92-4559-85b3-f419551727a9"
+        ],
+        "Changed": [
+          {
+            "Kind": "Insert",
+            "Index": 0,
+            "Value": {
+              "Name": "VRBarrel",
+              "Transform": {
+                "Transform": {
+                  "Position": {
+                    "X": 0.1995,
+                    "Y": -0.0189,
+                    "Z": -0.0626
+                  },
+                  "Orientation": {
+                    "X": -0.5,
+                    "Y": -0.5,
+                    "Z": 0.5,
+                    "W": 0.5
+                  }
+                },
+                "EulerHint": {
+                  "X": 0,
+                  "Y": -90,
+                  "Z": 90
+                }
+              },
+              "Scale": {
+                "X": 1,
+                "Y": 1,
+                "Z": 1
+              },
+              "Type": "64a7d585-9aed-4376-9483-9eb42d24c28d",
+              "SupportingFracture": null,
+              "HighlightSection": null
+            }
+          },
+          {
+            "Kind": "Insert",
+            "Index": 1,
+            "Value": {
+              "Name": "VRHand",
+              "Transform": {
+                "Transform": {
+                  "Position": {
+                    "X": 0.03,
+                    "Y": 0,
+                    "Z": 0.005
+                  },
+                  "Orientation": {
+                    "X": -0.5,
+                    "Y": -0.5,
+                    "Z": 0.5,
+                    "W": 0.5
+                  }
+                },
+                "EulerHint": {
+                  "X": 0,
+                  "Y": -90,
+                  "Z": 90
+                }
+              },
+              "Scale": {
+                "X": 1,
+                "Y": 1,
+                "Z": 1
+              },
+              "Type": "b7069463-1012-4a28-af7d-cf9f08e932c0",
+              "SupportingFracture": null,
+              "HighlightSection": null
+            }
+          }
+        ],
+        "Removed": []
+      }
+    },
+    "DefinitionType": "VRage:Keen.VRage.Game.Components.Models.ModelComponentDefinition",
+    "PriorityOverride": false
+  }
+}

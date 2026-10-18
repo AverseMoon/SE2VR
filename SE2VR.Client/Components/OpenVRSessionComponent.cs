@@ -16,9 +16,11 @@ using Keen.VRage.Core;
 using Keen.VRage.Core.EngineComponents;
 using Keen.VRage.Core.Game.Components;
 using Keen.VRage.Core.Game.Data;
+using Keen.VRage.Core.Game.GameSystems.OWT;
 using Keen.VRage.Core.Game.Systems;
 using Keen.VRage.Core.Game.Utils;
 using Keen.VRage.Core.Render;
+using Keen.VRage.Core.Systems;
 using Keen.VRage.DCS.Annotations;
 using Keen.VRage.DCS.Builders;
 using Keen.VRage.DCS.Components;
@@ -27,6 +29,7 @@ using Keen.VRage.Library.Diagnostics;
 using Keen.VRage.Library.Mathematics;
 using Keen.VRage.Library.Reflection.DependencyInjections;
 using Keen.VRage.Render.Options;
+using SE2VR.Client.Configurations;
 using SE2VR.Client.Patches;
 using SE2VR.Simulation;
 
@@ -37,6 +40,11 @@ namespace SE2VR.Client.Components;
 /// </summary>
 public partial class OpenVRSessionComponent : SessionComponent, IInSceneListener
 {
+    [After(typeof(BoneParentedPositionBaseComponent.TransformationUpdateJob))]
+    [Before(typeof(TransformsFinalized))]
+    [Before(typeof(RenderSubmissionBegin))]
+    private class ToolTransformJob : JobGroup;
+
     [Service]
     private readonly IDebugDraw _debugDraw;
 
@@ -49,8 +57,14 @@ public partial class OpenVRSessionComponent : SessionComponent, IInSceneListener
     [Service]
     private readonly ClientPlayersSessionComponent _players;
 
+    [Configuration]
+    private readonly VRToolsConfiguration _tools;
+
     public WeakEntityReference ControlledEntity = new();
     public Entity? InteractorEntity;
+
+    private Entity? _heldTool;
+    private RelativeTransform _heldToolTransform;
 
     private OpenVREngineComponent _vr;
     private OpenVROptions _settings;
@@ -154,9 +168,17 @@ public partial class OpenVRSessionComponent : SessionComponent, IInSceneListener
         }
     }
 
+    [DoNotPause]
+    [ToolTransformJob]
+    private void UpdateToolTransform()
+    {
+        _heldTool?.Data.Set(_heldToolTransform);
+    }
+
     private void UpdateInteraction(WorldTransform wt, RelativeTransform? rightHand, RelativeTransform? head)
     {
         ControlledEntity.Entity!.Data.TryRemove<LookOffsetData>();
+        _heldTool = null;
 
         if (InteractorEntity != null && (rightHand.HasValue || head.HasValue))
         {
@@ -164,41 +186,25 @@ public partial class OpenVRSessionComponent : SessionComponent, IInSceneListener
 
             if (rightHand is { } right)
             {
-                //Empty hand baseline
-                interactionRt = right;
-                interactionRt.Orientation *= Quaternion.CreateFromAxisAngle(Vector3.Right, MathHelper.ToRadians(-33.81f));
-                interactionRt.Position += interactionRt.Orientation.GetUp() * -0.025f;
+                interactionRt = right * _tools.ControllerAim;
 
                 if (_players.LocalPlayerController.GetTopControllable<ToolControllableComponent>() is { } tool && tool.Entity.TryGet<ModelComponent>() is { } model)
                 {
-                    foreach (var dummy in model.Definition.Dummies)
+                    var toolRt = (RelativeTransform)WorldTransform.GetRelativeTransform(tool.Data.GetWorldTransform(), wt);
+
+                    if (model.TryGetDummy(_tools.HandDummy) is { } hand)
                     {
-                        if (dummy.Type.Guid == new Guid("6fc9829d-3ee4-4735-b229-e00157f67a42") || dummy.Name?.Contains("Barrel") == true) //Paint tool/guns
-                        {
-                            interactionRt = (RelativeTransform)WorldTransform.GetRelativeTransform(tool.Data.GetWorldTransform(), wt) * (dummy.Transform.Transform * new RelativeTransform(Quaternion.CreateFromAxisAngle(Vector3.UnitY, -MathF.PI / 2)));
-                            break;
-                        }
-
-                        if (dummy.Type.Guid == new Guid("1a2d1774-94f9-4f4b-8e13-d778dc646f79")) //Welder
-                        {
-                            if (tool.Entity.GetComposition().DebugName.Contains("Welder"))
-                                interactionRt = (RelativeTransform)WorldTransform.GetRelativeTransform(tool.Data.GetWorldTransform(), wt) * (dummy.Transform.Transform * new RelativeTransform(Quaternion.CreateFromAxisAngle(Vector3.UnitY, MathF.PI)));
-                            else if (tool.Entity.GetComposition().DebugName.Contains("Grinder"))
-                                interactionRt = (RelativeTransform)WorldTransform.GetRelativeTransform(tool.Data.GetWorldTransform(), wt) * (dummy.Transform.Transform * new RelativeTransform(Quaternion.CreateFromAxisAngle(Vector3.UnitY, -MathF.PI / 2)));
-
-                            break;
-                        }
+                        toolRt = right * _tools.ControllerGrip * RelativeTransform.Inverse(hand.Transform);
+                        _heldTool = tool.Entity;
+                        _heldToolTransform = toolRt;
                     }
+
+                    if (model.TryGetDummy(_tools.BarrelDummy) is { } barrel)
+                        interactionRt = toolRt * barrel.Transform;
                 }
-                else if (_players.LocalPlayerController.GetTopControllable<BlockPlacerEntityComponent>() != null)
+                else if (_settings.PalmBuilding && _players.LocalPlayerController.GetTopControllable<BlockPlacerEntityComponent>() != null)
                 {
-                    //Palm
-                    interactionRt = right;
-                    interactionRt.Position += interactionRt.Orientation.GetUp() * -0.125f;
-                    interactionRt.Orientation *= Quaternion.CreateFromAxisAngle(Vector3.Up, MathF.PI / 2);
-                    interactionRt.Orientation *= Quaternion.CreateFromAxisAngle(Vector3.Forward, MathF.PI / 2);
-                    interactionRt.Orientation *= Quaternion.CreateFromAxisAngle(Vector3.Forward, MathF.PI / 4);
-                    interactionRt.Orientation.Normalize();
+                    interactionRt = right * _tools.ControllerPalm;
                 }
             }
             else
@@ -211,12 +217,17 @@ public partial class OpenVRSessionComponent : SessionComponent, IInSceneListener
             _debugDraw.DebugDraw.AddLine(interactionTransform.Position, interactionTransform.Position + (interactionTransform.Orientation.GetForward() * 100), ColorSRGB.White);
 
             CharacterApproximateToolOriginProviderComponent_WorldTransform_Patch.Origin = interactionTransform;
+            CharacterDummyToolOriginProviderComponent_WorldTransform_Patch.Origin = interactionTransform;
+            PlayerOriginProviderComponent_GetWorldTransform_Patch.Origin = interactionTransform;
+            PlayerOriginProviderComponent_GetWorldTransform_Patch.Owner = ControlledEntity.Entity?.DEntity;
             GunToolComponent_GetProjectileTransform_Patch.Transform = interactionRt;
             GunToolComponent_GetProjectileVisualsTransform_Patch.Transform = interactionRt;
         }
         else
         {
             CharacterApproximateToolOriginProviderComponent_WorldTransform_Patch.Origin = null;
+            CharacterDummyToolOriginProviderComponent_WorldTransform_Patch.Origin = null;
+            PlayerOriginProviderComponent_GetWorldTransform_Patch.Origin = null;
             GunToolComponent_GetProjectileTransform_Patch.Transform = null;
             GunToolComponent_GetProjectileVisualsTransform_Patch.Transform = null;
         }

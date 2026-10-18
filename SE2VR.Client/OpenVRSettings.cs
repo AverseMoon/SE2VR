@@ -58,6 +58,12 @@ public partial class OpenVROptions : ObservableObject, IOptionsPart
     private float _playerHeight = CHARACTER_HEIGHT;
 
     /// <summary>
+    /// When true, blocks are placed from the palm of the hand instead of pointing with the controller.
+    /// </summary>
+    [Notify]
+    private bool _palmBuilding = true;
+
+    /// <summary>
     /// When true, the HMD will be used as a flat-screen camera instead.
     /// </summary>
     [Notify]

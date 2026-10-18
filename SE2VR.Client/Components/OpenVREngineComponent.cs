@@ -2,6 +2,7 @@
 using System.Runtime.InteropServices;
 using HarmonyLib;
 using Keen.Game2.Client.RuntimeSystems.CoreScenes;
+using Keen.Game2.Simulation;
 using Keen.VRage.Core;
 using Keen.VRage.Core.EngineComponents;
 using Keen.VRage.Core.Game.Systems;
@@ -88,6 +89,8 @@ public partial class OpenVREngineComponent : EngineComponent, ISessionConfigurat
             VROptions = _options.GetOrCreatePart<OpenVROptions>();
             VROptions.ForceSerialization();
         }
+
+        GameFeatureConfig.EquipDelays = false;
 
         Logging.Info($"Successfully initialized {nameof(OpenVR)}");
         Initalized = true;

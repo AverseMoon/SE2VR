@@ -1,0 +1,89 @@
+{
+  "$Bundles": {
+    "System.Runtime": "1.0.0.0",
+    "VRage": "4.0.0.2907"
+  },
+  "$Type": "VRage:Keen.VRage.Game.Components.Models.ModelComponentDefinitionObjectBuilder",
+  "$Value": {
+    "Dummies": {
+      "$DeltaEncoded": true,
+      "Keys": [
+        "e2adeb61-0363-482e-be49-249b093caf14",
+        "e5aad7cd-593b-4b34-911d-bbb8ecddf142"
+      ],
+      "Changed": [
+        {
+          "Kind": "Insert",
+          "Index": 0,
+          "Value": {
+            "Name": "VRBarrel",
+            "Transform": {
+              "Transform": {
+                "Position": {
+                  "X": 0.3143,
+                  "Y": 0,
+                  "Z": -0.102
+                },
+                "Orientation": {
+                  "X": -0.5,
+                  "Y": -0.5,
+                  "Z": 0.5,
+                  "W": 0.5
+                }
+              },
+              "EulerHint": {
+                "X": 0,
+                "Y": -90,
+                "Z": 90
+              }
+            },
+            "Scale": {
+              "X": 1,
+              "Y": 1,
+              "Z": 1
+            },
+            "Type": "64a7d585-9aed-4376-9483-9eb42d24c28d",
+            "SupportingFracture": null,
+            "HighlightSection": null
+          }
+        },
+        {
+          "Kind": "Insert",
+          "Index": 1,
+          "Value": {
+            "Name": "VRHand",
+            "Transform": {
+              "Transform": {
+                "Position": {
+                  "X": 0.035,
+                  "Y": 0,
+                  "Z": 0.025
+                },
+                "Orientation": {
+                  "X": -0.4056,
+                  "Y": -0.4056,
+                  "Z": 0.5792,
+                  "W": 0.5792
+                }
+              },
+              "EulerHint": {
+                "X": 0,
+                "Y": -70,
+                "Z": 90
+              }
+            },
+            "Scale": {
+              "X": 1,
+              "Y": 1,
+              "Z": 1
+            },
+            "Type": "b7069463-1012-4a28-af7d-cf9f08e932c0",
+            "SupportingFracture": null,
+            "HighlightSection": null
+          }
+        }
+      ],
+      "Removed": []
+    }
+  }
+}

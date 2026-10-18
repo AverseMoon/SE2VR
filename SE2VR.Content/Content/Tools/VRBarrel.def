@@ -1,0 +1,11 @@
+{
+  "$Bundles": {
+    "Game2": "4.0.0.2907",
+    "System.Runtime": "1.0.0.0",
+    "VRage": "4.0.0.2907"
+  },
+  "$Type": "VRage:Keen.VRage.Core.Model.DummyTypeDefinitionObjectBuilder",
+  "$Value": {
+    "Guid": "64a7d585-9aed-4376-9483-9eb42d24c28d"
+  }
+}
