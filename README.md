@@ -7,9 +7,6 @@ https://www.youtube.com/watch?v=IntVsKmTe7k
 
 https://www.youtube.com/watch?v=CkOQraQ0wsI
 
-Known issues/limitations:
-* Oculus Quest headset is warped. I don't know, please help me fix it if you have a headset.
-
 # Running/Installation:
 
 This project is too early in development for a pre-compiled build. If you can't compile it, please don't use it.
@@ -51,20 +48,6 @@ This project is too early in development for a pre-compiled build. If you can't 
 * UI interaction is currently done using the VR dashboard. Whenever mouse input is accepted, the VR dashboard will automatically open, where you can use your VR hand to drag and click on the projected screen.
 
 * To close the in-game UI, close the dashboard. If the UI does not automatically close, report it with repeatable STR, logs, etc.
-
-# Frequently Asked Questions
-
-**1.** How can I increase the height of my player? Why are my hands huge?
-
-Change the "PlayerHeight" parameter in the OpenVROptions file to your ACTUAL height. This will rescale your world to fit the SE2 engineer (who is 1.75m tall).
-
-**2.** Why is the image noisy/blurry?
-
-Raytracing/TAA does not behave well with this implementation of VR (It introduces a lot of artifacts and prevents the image from ever stabilizing). You can improve the quality by disabling raytracing and FSR. You can also try changing the Render Resolution in Steam VR settings, increasing it above 100% will result in a sharper image.
-
-**3.** Why is the frame rate low?
-
-The implementation of VR is limited to 60fps.
 
 # Settings/Options
 
