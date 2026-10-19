@@ -1,4 +1,3 @@
-﻿using HarmonyLib;
 using Keen.Game2.Client.GameSystems.CameraSystems;
 using Keen.VRage.Core;
 using Keen.VRage.Core.EngineComponents;
@@ -7,16 +6,14 @@ using Keen.VRage.Core.Game.Data;
 using Keen.VRage.Core.Game.Systems;
 using Keen.VRage.DCS.Annotations;
 using Keen.VRage.DCS.Components;
-using Keen.VRage.Library.Definitions;
 using Keen.VRage.Library.Mathematics;
 using Keen.VRage.Library.Reflection.DependencyInjections;
+using Keen.VRage.Library.Utils;
 using Keen.VRage.Render.Options;
 using OpenVRAPI;
 using SE2VR.Client.Patches;
 using SE2VR.Client.Wrappers;
 using SE2VR.Simulation;
-using System.Runtime.InteropServices;
-using System.Text.Json;
 using Valve.VR;
 using Vortice.Direct3D12;
 using Vortice.DXGI;
@@ -28,27 +25,30 @@ namespace SE2VR.Client.Components;
 /// </summary>
 public partial class VRRenderEngineComponent : EngineComponent, IInSceneListener
 {
-    /// <summary>
-    /// When true, the game will render both left and right eye views in the same frame, allowing for 60fps instead of 30 :)
-    /// </summary>
-    public const bool DOUBLE_RENDER = true;
+    public static VRRenderEngineComponent? Instance { get; private set; }
 
     public CameraComponent? Camera;
     public Entity? Body;
-    public RelativeTransform HMD = RelativeTransform.Identity;
+
+    public bool IsRightEye { get; private set; }
 
     [Service]
     private readonly IOptions _options;
 
-    private EVREye _currentPass;
-    private EVREye _preparedPass;
-    private VRTextureBounds_t _imageBounds = new() { uMax = 1, vMax = 1 };
     private OpenVROptions _vrOptions;
-    private SimpleOverlay? _overlay;
-
-    private IntPtr _texturePtr;
-
+    private VRTextureBounds_t _imageBounds = new() { uMax = 1, vMax = 1 };
     private Vector2I _originalResolution;
+
+    //All render thread
+    private readonly TrackedDevicePose_t[] _renderPoses = new TrackedDevicePose_t[OpenVR.k_unMaxTrackedDeviceCount];
+    private MatrixD _head = MatrixD.Identity;
+    private readonly VREyeContext _eyeContext = new();
+    private readonly VREyeFsr _fsr = new();
+    private MyRenderView _centerView = null!;
+    private MyRenderView _centerPreviousView = null!;
+    private readonly Dictionary<EVREye, MyTexture> _eyeTextures = new();
+    private readonly Dictionary<EVREye, MyRenderView> _eyeViews = new();
+    private bool _eyeTexturesReady;
 
     [Init]
     protected new void Init()
@@ -59,12 +59,19 @@ public partial class VRRenderEngineComponent : EngineComponent, IInSceneListener
             return;
 
         Logging.Info($"Initializing {nameof(VRRenderEngineComponent)}");
+        Instance = this;
 
         OpenVR.Compositor.SetExplicitTimingMode(EVRCompositorTimingMode.Explicit_ApplicationPerformsPostPresentHandoff);
 
-        CommitFramePatch.PreCommit += OverrideCamera; //60hz
-        Render12EngineComponentPatch.PostDraw += PostDraw; //up to 200hz
-        
+        CommitFramePatch.PreCommit += OverrideCamera; //Main thread
+
+        SceneDrawSystemPatch.PreDraw += PreSceneDraw; //Render thread
+        SceneDrawSystemPatch.PostDraw += PostSceneDraw; //Render thread
+        Render12EngineComponentPatch.PreDraw += PreDraw; //Render thread
+        Render12EngineComponentPatch.PostDraw += PostDraw; //Render thread
+        TemporalResourcePatch.Created += _eyeContext.Register; //Render thread
+        TemporalResourcePatch.Disposed += _eyeContext.Unregister; //Render thread
+
         uint width = 0, height = 0;
         OpenVR.System.GetRecommendedRenderTargetSize(ref width, ref height);
 
@@ -84,108 +91,175 @@ public partial class VRRenderEngineComponent : EngineComponent, IInSceneListener
             _options.GetOrCreatePart<RenderOptionsPart2>().SetResolution(new Vector2I((int)width, (int)height));
         }
 
-        //_overlay = new SimpleOverlay();
         GameWindowPatch.OnCursorVisibleChanged += GameWindowPatch_OnCursorVisibleChanged;
-        _texturePtr = Marshal.AllocHGlobal(Marshal.SizeOf<D3D12TextureData_t>());
-
-        Logging.Info($"{JsonSerializer.Serialize(OpenVREngineComponent.Instance.System.GetEyeToHeadTransform(EVREye.Eye_Left), new JsonSerializerOptions { WriteIndented = true, IncludeFields = true })}");
-        Logging.Info($"{JsonSerializer.Serialize(OpenVREngineComponent.Instance.System.GetEyeToHeadTransform(EVREye.Eye_Right), new JsonSerializerOptions { WriteIndented = true, IncludeFields = true })}");
-        Logging.Info($"{JsonSerializer.Serialize((Matrix)VRUtils.GetPerspectiveFovRhInfiniteComplementary(EVREye.Eye_Left, DefinitionManager.Instance.GetDefinitionsOfType<CameraDefinition>().FirstOrDefault()?.NearPlane ?? 0.1f), new JsonSerializerOptions { WriteIndented = true, IncludeFields = true })}");
-        Logging.Info($"{JsonSerializer.Serialize((Matrix)VRUtils.GetPerspectiveFovRhInfiniteComplementary(EVREye.Eye_Right, DefinitionManager.Instance.GetDefinitionsOfType<CameraDefinition>().FirstOrDefault()?.NearPlane ?? 0.1f), new JsonSerializerOptions { WriteIndented = true, IncludeFields = true })}");
     }
 
     [Destructor]
     protected void Destroy()
     {
-        _overlay?.Dispose();
-        _overlay = null;
+        CommitFramePatch.PreCommit -= OverrideCamera;
+        SceneDrawSystemPatch.PreDraw -= PreSceneDraw;
+        SceneDrawSystemPatch.PostDraw -= PostSceneDraw;
+        Render12EngineComponentPatch.PreDraw -= PreDraw;
+        Render12EngineComponentPatch.PostDraw -= PostDraw;
+        TemporalResourcePatch.Created -= _eyeContext.Register;
+        TemporalResourcePatch.Disposed -= _eyeContext.Unregister;
 
-        Marshal.FreeHGlobal(_texturePtr);
+        GameWindowPatch.OnCursorVisibleChanged -= GameWindowPatch_OnCursorVisibleChanged;
+
+        if (Instance == this)
+            Instance = null;
+
     }
 
     void IInSceneListener.OnBeforeRemovedFromScene()
     {
-        _options.GetOrCreatePart<RenderDisplayOptionsPart>().Resolution = _originalResolution;
+        if (!_vrOptions.CameraMode)
+        {
+            _options.GetOrCreatePart<RenderDisplayOptionsPart>().Resolution = _originalResolution;
+        }   
     }
 
     private void GameWindowPatch_OnCursorVisibleChanged(bool visible)
     {
         if (visible)
-        {
             OpenVR.Overlay?.ShowDashboard(_vrOptions.DashboardWindow);
-        }
-        else
-        {
-
-        }
-        /*if (visible)
-        {
-            _overlay.Show();
-        }
-        else
-        {
-            _overlay.Hide();
-        }*/
     }
 
     private void OverrideCamera()
     {
+        if (Camera == null || Body == null)
+            return;
+
+        var body = Body.Data.GetWorldTransform();
+        body.Position += Vector3D.Transform(_vrOptions.WorldOffset, body.Orientation);
+
+        var wt = _vrOptions.CameraMode ? body * (OpenVREngineComponent.Instance.Head ?? RelativeTransform.Identity) : body;
+        CameraPatch.Transform = wt.IsValid() ? wt : null;
+
+        Camera.UpdateRenderSettings();
+    }
+
+    private void PreDraw()
+    {
         if (OpenVR.Compositor == null)
             return;
 
-        if (_preparedPass == _currentPass)
-        {
-            Logging.Debug($"Already Prepared {_currentPass}");
+        OpenVR.Compositor.WaitGetPoses(_renderPoses, []);
+
+        var pose = _renderPoses[OpenVR.k_unTrackedDeviceIndex_Hmd];
+        if (!pose.bPoseIsValid)
             return;
-        }
 
-        _preparedPass = _currentPass;
+        _head = (MatrixD)(VRUtils.ToMatrix(pose.mDeviceToAbsoluteTracking) * Matrix.CreateRotationY(_vrOptions.PlaySpaceRotation));
+        _head.Translation *= _vrOptions.GetScale();
+    }
 
-        switch (_currentPass)
+    private void PreSceneDraw(MySceneDrawSystem sceneDraw, object target)
+    {
+        //Draw left eye
+        if (_vrOptions.CameraMode || IsRightEye)
+            return;
+
+        var settings = MyCoreSystems.Settings;
+        _centerView = settings.RenderView;
+        _centerPreviousView = settings.PreviousRenderView;
+
+        if (!_centerView.LastUpdateWasSmooth)
+            _eyeViews.Clear();
+
+        MyCoreSystems.EndDraw();
+        ApplyEyeViewToRender(EVREye.Eye_Left);
+        MyCoreSystems.BeginDraw();
+    }
+
+    private void PostSceneDraw(MySceneDrawSystem sceneDraw, object target)
+    {
+        //Draw right eye
+        if (_vrOptions.CameraMode || IsRightEye)
+            return;
+
+        var settings = MyCoreSystems.Settings;
+        bool animationWasPaused = MyCoreSystems.AnimationIsPaused;
+        try
         {
-            case EVREye.Eye_Left:
-                TrackedDevicePose_t[] pRenderPoseArray = new TrackedDevicePose_t[OpenVR.k_unMaxTrackedDeviceCount];
-                TrackedDevicePose_t[] pGamePoseArray = new TrackedDevicePose_t[OpenVR.k_unMaxTrackedDeviceCount];
-                OpenVR.Compositor.WaitGetPoses(pRenderPoseArray, pGamePoseArray);
-                Logging.Debug($"WaitGetPoses");
+            _eyeViews[EVREye.Eye_Left] = settings.RenderView;
+            CopyEyeToTexture(EVREye.Eye_Left, new MyTexture(target));
 
-                var matrix = pGamePoseArray[OpenVR.k_unTrackedDeviceIndex_Hmd].mDeviceToAbsoluteTracking;
-                HMD = _vrOptions.Rescale(new RelativeTransform(Quaternion.CreateFromYawPitchRoll(OpenVREngineComponent.Instance.VROptions.PlaySpaceRotation, 0, 0)) * VRUtils.ToTransform(matrix));
+            MyCoreSystems.EndDraw();
+            ApplyEyeViewToRender(EVREye.Eye_Right);
+            IsRightEye = true;
+            _eyeContext.BeginRightEye();
+            _fsr.BeginRightEye();
 
-                break;
+            MyCoreSystems.AnimationIsPaused = true;
+            MyCoreSystems.BeginDraw();
 
-            case EVREye.Eye_Right:
-                break;
+            sceneDraw.Draw(target);
 
-            default:
-                throw new Exception($"Unexpected render pass {_currentPass}");
+            _eyeViews[EVREye.Eye_Right] = settings.RenderView;
+            CopyEyeToTexture(EVREye.Eye_Right, new MyTexture(target));
+            _eyeTexturesReady = true;
         }
-
-        if (Camera != null && Body != null)
+        finally
         {
-            var body = Body.Data.GetWorldTransform();
-            body.Position += Vector3D.Transform(_vrOptions.WorldOffset, body.Orientation);
-
-            var eyeToHead = VRUtils.ToTransform(OpenVREngineComponent.Instance.System.GetEyeToHeadTransform(_currentPass));
-            var eye = HMD * _vrOptions.Rescale(eyeToHead);
-
-            var wt = body * eye;
-
-            if (wt.IsValid() && !GameWindowPatch.CursorVisible)
+            if (IsRightEye)
             {
-                CameraPatch.Transform = wt;
-
-                if (!_vrOptions.CameraMode)
-                    MatrixPatch.CurrentEye = _currentPass;
-            }
-            else
-            {
-                CameraPatch.Transform = null;
-                MatrixPatch.CurrentEye = null;
+                _fsr.EndRightEye();
+                _eyeContext.EndRightEye();
             }
 
-            Camera.UpdateRenderSettings();
+            IsRightEye = false;
+            MyCoreSystems.AnimationIsPaused = animationWasPaused;
+            settings.RenderView = _centerView;
+            settings.PreviousRenderView = _centerPreviousView;
         }
+
+        foreach (var view in _eyeViews.Values)
+            view.OnFrameEnd();
+
+        _eyeViews[EVREye.Eye_Left].LastCameraPosition = _eyeViews[EVREye.Eye_Right].InvViewD.Translation;
+    }
+
+    private void ApplyEyeViewToRender(EVREye eye)
+    {
+        var history = _eyeViews.GetValueOrDefault(eye);
+        
+        MatrixD eyeLocal = VRUtils.ToMatrix(OpenVR.System.GetEyeToHeadTransform(eye));
+        eyeLocal.Translation *= _vrOptions.GetScale();
+        MatrixD eyeWorld = eyeLocal * _head * _centerView.InvViewD;
+
+        var view = _centerView.CreateCopy();
+        view.CopyTemporalState(history);
+
+        if (eye == EVREye.Eye_Right)
+            view.LastCameraPosition = _eyeViews[EVREye.Eye_Left].InvViewD.Translation;
+
+        var projection = VRUtils.GetPerspectiveFovRhInfiniteComplementary(eye, _centerView.NearClipping);
+        float fov = 2f * MathF.Atan(1f / (float)projection.M22);
+        view.SetCameraParameters(eyeWorld, fov, _centerView.NearClipping, _centerView.FarClipping, _centerView.VeryFarClipping, new((float)projection.M31, (float)projection.M32), smooth: history != null);
+
+        MyCoreSystems.Settings.RenderView = view;
+        MyCoreSystems.Settings.PreviousRenderView = history ?? view;
+    }
+
+    private void CopyEyeToTexture(EVREye eye, MyTexture source)
+    {
+        var desc = source.D3DResource.Description;
+        var res = new Vector2I((int)desc.Width, (int)desc.Height);
+
+        if (!_eyeTextures.TryGetValue(eye, out var texture) || texture.Resolution != res)
+        {
+            texture?.Dispose();
+
+            //Final texture
+            texture = MyTexture.CreateRWResizableRenderTargetTexture(EnumInfo<EVREye>.GetName(eye), Format.R8G8B8A8_UNorm_SRgb, res, Format.R8G8B8A8_UNorm, 1, null, null);
+            _eyeTextures[eye] = texture;
+        }
+
+        using var commandList = MyCoreSystems.CreateDirectCommandList(EnumInfo<EVREye>.GetName(eye));
+        commandList.CopyResource(texture.Instance, source.Instance);
+        commandList.TransitionTo(texture, ResourceStates.PixelShaderResource);
     }
 
     private void PostDraw()
@@ -193,54 +267,37 @@ public partial class VRRenderEngineComponent : EngineComponent, IInSceneListener
         if (OpenVR.Compositor == null)
             return;
 
-        switch (_currentPass)
+        if (!_eyeTexturesReady)
         {
-            case EVREye.Eye_Left:
-                PresentEye(_currentPass);
-                _currentPass = EVREye.Eye_Right;
-                break;
-
-            case EVREye.Eye_Right:
-                PresentEye(_currentPass);
-                OpenVR.Compositor.PostPresentHandoff();
-                Logging.Debug("Handoff");
-                _currentPass = EVREye.Eye_Left;
-                break;
-
-            default:
-                throw new Exception($"Unexpected render pass {_currentPass}");
+            CopyEyeToTexture(EVREye.Eye_Left, MyCoreSystems.FinalLDRTexture);
+            MyCoreSystems.FlushQueues();
         }
+
+        var queue = MyCoreSystems.DeviceContext.GetDirectQueue().GetQueue();
+        SubmitToCompositor(EVREye.Eye_Left, _eyeTextures[EVREye.Eye_Left].D3DResource, queue);
+        SubmitToCompositor(EVREye.Eye_Right, _eyeTextures[_eyeTexturesReady ? EVREye.Eye_Right : EVREye.Eye_Left].D3DResource, queue);
+
+        _eyeTexturesReady = false;
+        OpenVR.Compositor.PostPresentHandoff();
     }
 
-    private void PresentEye(EVREye eye)
+    private unsafe void SubmitToCompositor(EVREye eye, ID3D12Resource resource, ID3D12CommandQueue queue)
     {
-        if (OpenVR.Compositor == null)
-            return;
-
-        IDXGISwapChain3 swapchain = MyCoreSystems.SwapChain.GetD3DSwapChain();
-        using ID3D12Resource resource = swapchain.GetBuffer<ID3D12Resource>(swapchain.CurrentBackBufferIndex);
-        ID3D12CommandQueue queue = MyCoreSystems.DeviceContext.GetPresentQueue().GetQueue();
-        
         var data = new D3D12TextureData_t
         {
             m_pResource = resource.NativePointer,
             m_pCommandQueue = queue.NativePointer
         };
-        Marshal.StructureToPtr(data, _texturePtr, false);
 
         var input = new Texture_t
         {
             eColorSpace = EColorSpace.Auto,
             eType = ETextureType.DirectX12,
-            handle = _texturePtr
+            handle = (IntPtr)(&data)
         };
 
         var error = OpenVR.Compositor.Submit(eye, ref input, ref _imageBounds, EVRSubmitFlags.Submit_Default);
-        Logging.Debug($"Uploading {eye} Error:{error}");
-
-        if (eye == EVREye.Eye_Left)
-        {
-            _overlay?.SetTexture(ref input);
-        }
+        if (error != EVRCompositorError.None)
+            Logging.Debug($"Submitting {eye} failed: {error}");
     }
 }

@@ -2,7 +2,6 @@
 using Keen.VRage.Core.EngineComponents;
 using Keen.VRage.Core.Plugins;
 using Keen.VRage.Core.Project;
-using Keen.VRage.Render.EngineComponents;
 using SE2VR.Client.Components;
 using SE2VR.Client.Input;
 using SE2VR.Simulation;
@@ -69,12 +68,6 @@ public class Plugin : IPlugin
             engineBuilder.EntityBuilder.WithComponent<VRRenderEngineComponent>();
 
             engineBuilder.SceneBuilder.AddJobsFromAssembly(typeof(OpenVREngineComponent).Assembly);
-
-            //Disable render thread so that render command buffer is guaranteed to be in sync with render
-            foreach (var ob in engineBuilder.EntityBuilder.OBsOfType<RenderObjectBuilder>())
-            {
-                ob.SyncRendering = true;
-            }
         }
 
         engineBuilder.EntityBuilder.WithComponent<ConditionalVRServerEngineComponent>();

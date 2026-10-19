@@ -20,7 +20,6 @@ public class MyCommandQueue(object? obj)
     static MyCommandQueue()
     {
         var type = AccessTools.TypeByName("Keen.VRage.Render12.Core.Device.CommandQueue");
-        type.PrintFields();
         _d3dQueueField = AccessTools.Field(type, "<D3DQueue>k__BackingField");
     }
 

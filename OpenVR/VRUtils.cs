@@ -66,7 +66,7 @@ public static class VRUtils
         return new MatrixD(
             2d * idx, 0d, 0d, 0d,
             0d, 2d * idy, 0d, 0d,
-            -sx * idx, -sy * idy, 0d, -1d,
+            sx * idx, -sy * idy, 0d, -1d,
             0d, 0d, nearPlane, 0d);
     }
 

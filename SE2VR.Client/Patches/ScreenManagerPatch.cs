@@ -1,5 +1,6 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Media;
+using Avalonia.Threading;
 using HarmonyLib;
 using Keen.VRage.UI.Screens;
 
@@ -37,7 +38,9 @@ public static class ScreenManagerPatch
 
     private static void OnCursorVisibleChanged(bool obj)
     {
-        UpdateResolution();
+        if (Dispatcher.UIThread.CheckAccess())
+            UpdateResolution();
+        else
+            Dispatcher.UIThread.Post(UpdateResolution);
     }
-
 }

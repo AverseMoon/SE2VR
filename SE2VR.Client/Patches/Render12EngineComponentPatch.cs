@@ -10,6 +10,7 @@ namespace SE2VR.Client.Patches;
 [HarmonyPatch]
 public static class Render12EngineComponentPatch
 {
+    public static Action? PreDraw;
     public static Action? PostDraw;
 
     static MethodBase? TargetMethod()
@@ -17,6 +18,9 @@ public static class Render12EngineComponentPatch
         var type = AccessTools.TypeByName("Keen.VRage.Render12.EngineComponents.Render12EngineComponent");
         return AccessTools.Method(type, "Draw");
     }
+
+    [HarmonyPrefix]
+    static void Prefix() => PreDraw.InvokeIfNotNull();
 
     [HarmonyPostfix]
     static void Postfix() => PostDraw.InvokeIfNotNull();
