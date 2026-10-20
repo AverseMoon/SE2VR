@@ -7,23 +7,25 @@ https://www.youtube.com/watch?v=IntVsKmTe7k
 
 https://www.youtube.com/watch?v=CkOQraQ0wsI
 
-# Running/Installation:
+# Compiling:
 
-This project is too early in development for a pre-compiled build. If you can't compile it, please don't use it.
-
-**1.** Run SetupRepository.bat to create a symlink to the SE2 DLLs
+**1.** Run **SetupRepository.bat** to create a symlink to the SE2 DLLs
 
 **2.** Open the solution and compile SE2VR in Debug or Release configuration (or run "dotnet build SE2VR.sln" in command prompt)
 
+# Running/Installation:
+
+**1.** Extract the .zip file into a folder of your choice
+
 <img width="774" height="355" alt="image" src="https://github.com/user-attachments/assets/c0a0ab34-2143-4103-901e-e3388262cd73" />
 
-**3.** Add the following launch argument to Space Engineers 2 with the correct path
+**2.** Add the following launch argument to Space Engineers 2 with the correct path
 
 -plugins:"C:/Path/To/SE2VR.dll"
 
 <img width="1041" height="353" alt="image" src="https://github.com/user-attachments/assets/da3382ef-a9d2-4474-88bd-0c372b3cd2e8" />
 
-**4.** Launch Space Engineers 2. Steam VR will open automatically
+**3.** Launch Space Engineers 2. Steam VR will open automatically
 
 **Please note that this plugin does not auto-update, and is likely to break between updates.**
 
