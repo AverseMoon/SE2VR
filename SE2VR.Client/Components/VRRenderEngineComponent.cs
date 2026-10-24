@@ -23,7 +23,7 @@ namespace SE2VR.Client.Components;
 /// <summary>
 /// Manage the rendering of the HMD
 /// </summary>
-public partial class VRRenderEngineComponent : EngineComponent, IInSceneListener
+public partial class VRRenderEngineComponent : EngineComponent
 {
     public static VRRenderEngineComponent? Instance { get; private set; }
 
@@ -37,7 +37,9 @@ public partial class VRRenderEngineComponent : EngineComponent, IInSceneListener
 
     private OpenVROptions _vrOptions;
     private VRTextureBounds_t _imageBounds = new() { uMax = 1, vMax = 1 };
-    private Vector2I _originalResolution;
+    private bool _originalFullScreen;
+    private Vector2I _originalWindowedResolution;
+    private Vector2I _originalFullscreenResolution;
 
     //All render thread
     private readonly TrackedDevicePose_t[] _renderPoses = new TrackedDevicePose_t[OpenVR.k_unMaxTrackedDeviceCount];
@@ -81,7 +83,9 @@ public partial class VRRenderEngineComponent : EngineComponent, IInSceneListener
         {
             var renderOptions = _options.GetOrCreatePart<RenderDisplayOptionsPart>();
 
-            _originalResolution = renderOptions.Resolution;
+            _originalFullScreen = renderOptions.FullScreen;
+            _originalWindowedResolution = renderOptions.WindowedResolution;
+            _originalFullscreenResolution = renderOptions.FullscreenResolution;
 
             renderOptions.FullScreen = true;
 
@@ -110,14 +114,15 @@ public partial class VRRenderEngineComponent : EngineComponent, IInSceneListener
         if (Instance == this)
             Instance = null;
 
-    }
-
-    void IInSceneListener.OnBeforeRemovedFromScene()
-    {
-        if (!_vrOptions.CameraMode)
+        if (_vrOptions != null && !_vrOptions.CameraMode)
         {
-            _options.GetOrCreatePart<RenderDisplayOptionsPart>().Resolution = _originalResolution;
-        }   
+            var renderOptions = _options.GetOrCreatePart<RenderDisplayOptionsPart>();
+            renderOptions.FullScreen = _originalFullScreen;
+            renderOptions.WindowedResolution = _originalWindowedResolution;
+            renderOptions.FullscreenResolution = _originalFullscreenResolution;
+
+            EngineOptionsStorageEngineComponent.NeedsUpdate?.Invoke();
+        }
     }
 
     private void GameWindowPatch_OnCursorVisibleChanged(bool visible)
