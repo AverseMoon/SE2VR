@@ -125,6 +125,10 @@
         <HintPath>..\GameLibs\VRage.UI.dll</HintPath>
         <Private>False</Private>
     </Reference>
+    <Reference Include="VRage.UI.Shared">
+        <HintPath>..\GameLibs\VRage.UI.Shared.dll</HintPath>
+        <Private>False</Private>
+    </Reference>
     <Reference Include="VRage.UI">
         <HintPath>..\GameLibs\Avalonia.Controls.dll</HintPath>
         <Private>False</Private>
